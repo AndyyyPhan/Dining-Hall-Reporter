@@ -1,0 +1,173 @@
+{% extends 'login/base.html' %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Details</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <style>
+        body {
+            color: #222d4b;
+            /* Set the color for all text */
+        }
+
+        .custom-btn {
+            background-color: #222d4b;
+            color: white;
+        }
+
+        .status-label {
+            display: inline-block;
+            padding: 0.25em 0.5em;
+            font-size: 75%;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+        }
+
+        .status-resolved {
+            color: #155724;
+            background-color: #d4edda;
+        }
+
+        .status-in-progress {
+             color: #856404;
+            background-color: #ffeeba;
+        }
+
+        .status-new {
+            color: #004085;
+            background-color: #cce5ff;
+        }
+        .custom-tag {
+            display: inline-block;
+            padding: 0.25em 0.5em;
+            font-size: 75%;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+            color: #222d4b;
+            background-color: white;
+            border-radius: 0.25rem;
+            border: 1px solid #222d4b;
+        }
+  .header-heading {
+                font-size: 40px;
+                color: #222d4b;
+                font-weight: bold;
+            }
+
+        .custom-btn:hover {
+            background-color:#0e1424;
+            color: white;
+        }
+
+        .resolved-notes-container {
+            background-color: #e3eeff;
+            color: #222d4b;
+            font-style: italic;
+            border: 1.5px solid #222d4b;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center header-heading"><strong>Report Details</strong></h1>
+            {% if report %}
+            <div class="custom-card">
+                <div class="card-body">
+                    <p style=><strong>Status: </strong>
+                        {% if report.status == 'RESOLVED' %}
+                        <span class="status-label status-resolved">Resolved</span>
+                        {% elif report.status == 'IN PROGRESS' %}
+                        <span class="status-label status-in-progress">In Progress</span>
+                        {% else %}
+                        <span class="status-label status-new">New</span>
+                        {% endif %}
+                    </p>
+                    {% if report.tags.exists %}
+                    <p><strong>Tags:</strong>
+
+                        {% for tag in report.tags.all %}
+                        <span class="custom-tag">{{ tag.name }}</span>
+                        {% endfor %}
+                    </p>
+                    {% else %}
+                    <p><strong>Tags:</strong> <span class="text-muted">None</span></p>
+                    {% endif %}
+
+                    <p><strong>Location:</strong> {{ report.location }}</p>
+                    <p><strong>Submission Time: </strong>{{ report.submission_time }}</p>
+                     {% if report.rating != 0 %}
+                    <p><strong>Experience Rating: </strong>{{ report.rating }}</p>
+                    {% else %}
+                    <p><strong>Experience Rating: </strong>  <span class="text-muted">None</span></p>
+                    {% endif %}
+                    <strong>Report Explanation:</strong>
+                    <p>
+                        {% if report.explanation %}
+                        {{ report.explanation }}
+                        {% else %}
+                        <span class="text-muted">No report explanation provided</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>File:</strong>
+                        {% if report.filenames %}
+                        <a href="{% url 'login:file_detail' report.filenames %}" class="file-link">
+                            {{ report.filenames }}
+                        </a>
+                        {% else %}
+                        <span>None</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>ID:</strong> {{ report.id }}</p>
+                    <hr>
+                    {% if report.status == 'RESOLVED' %}
+                    <div class="resolved-notes-container">
+                        <p><strong>Report Resolve Notes:</strong></p>
+                        <p>
+                            {% if report.resolved_notes %}
+                            {{ report.resolved_notes }}
+                            {% else %}
+                            <span class="text-muted">No report resolve notes provided</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <br>
+                    {% endif %}
+                    {% if prevPage == 'user_reports' %}
+                    <a href="{% url 'login:user_reports' %}" class="btn custom-btn"><strong>Back to the
+                        List</strong></a>
+                    {% elif prevPage == 'user_reports_new' %}
+                    <a href="{% url 'login:user_list_files_new' %}" class="btn custom-btn"><strong>Back to the
+                        List</strong></a>
+                    {% elif prevPage == 'user_reports_ip' %}
+                     <a href="{% url 'login:user_list_files_ip' %}" class="btn custom-btn"><strong>Back to the
+                        List</strong></a>
+                    {% elif prevPage == 'user_reports_resolved' %}
+                       <a href="{% url 'login:user_list_files_resolved' %}" class="btn custom-btn"><strong>Back to the
+                        List</strong></a>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <p class="text-muted">Cannot view the detail.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
